@@ -21,6 +21,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.http.HttpServletResponse;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
 
 @Configuration
 @EnableWebSecurity
@@ -35,14 +37,15 @@ public class Config extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         try {
-            auth.userDetailsService(username -> accountService.findByUsername(username));
+            auth.userDetailsService(email -> accountService.loadUserByUsername(email));
         }catch (UsernameNotFoundException usernameNotFoundException){
-            System.out.println("Username not found");
+            System.out.println(usernameNotFoundException.getMessage());
+            throw usernameNotFoundException;
         }
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder();
+    public static PasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder();
     }
 
     @Override
@@ -70,6 +73,7 @@ public class Config extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/").permitAll()
                 .antMatchers(HttpMethod.GET,"/error").permitAll()
                 .antMatchers(HttpMethod.POST,"/login").permitAll()
+                .antMatchers(HttpMethod.POST,"/register").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(

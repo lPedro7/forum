@@ -1,20 +1,45 @@
 package com.esliceu.forum.models;
 
-import org.springframework.web.bind.annotation.ModelAttribute;
-
 import javax.persistence.*;
 
 
 @Table(name = "Account")
 @Entity
 public class Account {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
+
+    @Column(name = "email")
     String email;
+    @Column(name = "name")
     String name;
+    @Column(name = "password")
     String password;
-    byte[] photo;
+
+    @Column(name = "photo")
+    String avatar;
+    @Column(name = "role")
+    String role;
+
+
+
+    public enum Role {
+        User,
+        Moderator,
+        Admin
+    }
+
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
     public int getId() {
         return id;
@@ -48,11 +73,13 @@ public class Account {
         this.password = password;
     }
 
-    public byte[] getPhoto() {
-        return photo;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setPhoto(byte[] photo) {
-        this.photo = photo;
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
+
 }
