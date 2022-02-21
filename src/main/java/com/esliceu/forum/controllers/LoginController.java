@@ -1,6 +1,5 @@
 package com.esliceu.forum.controllers;
 
-import com.esliceu.forum.configuration.Config;
 import com.esliceu.forum.dto.LoginRequest;
 import com.esliceu.forum.dto.RegisterRequest;
 import com.esliceu.forum.models.Account;
@@ -14,7 +13,6 @@ import com.nimbusds.jose.shaded.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
@@ -37,24 +35,21 @@ public class LoginController {
 
     //Pdte mensaje error
     @PostMapping("/login")
-    public ResponseEntity<String> getLogin(@RequestBody LoginRequest request) {
-        try {
+    public String getLogin(@RequestBody LoginRequest request) throws JsonProcessingException {
             User user = authenticate(request);
             String token = jwtTokenUtil.generateAccessToken(user);
             Account account = accountService.getUserByEmail(request.getEmail());
 
             JSONObject jsonObject = new JSONObject();
 
-            jsonObject.appendField("user", account);
+            Map<String,Object> map = new HashMap<>();
+            map.put("user",account.toJsonMap());
+            map.put("token",token);
+
+            jsonObject.appendField("user", account.toJsonMap());
             jsonObject.appendField("token", token);
 
-            return ResponseEntity.ok()
-                    .body(jsonObject.toJSONString());
-        } catch (BadCredentialsException ex) {
-            Map<String, String> map = new HashMap<>();
-            map.put("message", "Error d'autenticació");
-            return ResponseEntity.status(401).body(map.toString());
-        }
+            return String.valueOf(jsonObject);
     }
 
     private User authenticate(LoginRequest request) {
@@ -83,20 +78,18 @@ public class LoginController {
 
 
     @GetMapping("/getprofile")
-    public Map<String,String> getProfile(@RequestHeader("Authorization") String auth) throws JsonProcessingException {
-
-        System.out.println(auth);
+    public Map getProfile(@RequestHeader("Authorization") String auth) throws JsonProcessingException {
 
         auth = auth.replace("Bearer ", "");
 
         String username = jwtTokenUtil.getUsername(auth);
         Account account = accountService.getUserByEmail(username);
 
-        Map<String, String> map = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
-        map.put("user", objectMapper.writeValueAsString(account));
+        System.out.println("Auth = " + auth);
+        System.out.println("email = " + username);
+        System.out.println("Account = " + account.getName());
 
-        return map;
+        return account.toJsonMap();
     }
 
 
@@ -128,7 +121,7 @@ public class LoginController {
     }
 
     @PutMapping("/profile/password")
-    public ResponseEntity<String> updatePassword(@RequestBody String data, @RequestHeader("Authorization") String auth) {
+    public ResponseEntity<String> updatePassword(@RequestBody String data, @RequestHeader("Authorization") String auth) throws RuntimeException {
 
         String token = auth.replace("Bearer ", "");
         String userEmail = jwtTokenUtil.getUsername(token);
@@ -136,18 +129,14 @@ public class LoginController {
         Map<String, String> mapData = new Gson().fromJson(data, Map.class);
         String newPassword = mapData.get("newPassword");
         String currentPassword = mapData.get("currentPassword");
-        try{
-            accountService.updatePassword(userEmail,currentPassword,newPassword);
-        }catch (RuntimeException runtimeException){
-            Map<String, String> map = new HashMap<>();
-            map.put("message", "Error d'autenticació");
-            return ResponseEntity.status(401).body(map.toString());
-        }
+
+        accountService.updatePassword(userEmail, currentPassword, newPassword);
+
 
         Account account = accountService.getUserByEmail(userEmail);
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.appendField("user",account);
+        jsonObject.appendField("user", account);
 
         return ResponseEntity.ok().body(jsonObject.toJSONString());
     }

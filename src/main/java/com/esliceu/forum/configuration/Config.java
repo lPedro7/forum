@@ -74,6 +74,9 @@ public class Config extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,"/error").permitAll()
                 .antMatchers(HttpMethod.POST,"/login").permitAll()
                 .antMatchers(HttpMethod.POST,"/register").permitAll()
+                .antMatchers(HttpMethod.GET,"/categories/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/getprofile").permitAll()
+                .antMatchers(HttpMethod.GET,"/topics/**").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(

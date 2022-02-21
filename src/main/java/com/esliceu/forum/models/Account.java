@@ -1,6 +1,13 @@
 package com.esliceu.forum.models;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.shaded.json.JSONObject;
+import org.springframework.security.core.Transient;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import javax.persistence.*;
+import java.util.*;
 
 
 @Table(name = "Account")
@@ -24,7 +31,11 @@ public class Account {
     @Column(name = "role")
     String role;
 
+    @OneToMany
+    Set<Topic> topics;
 
+    @OneToMany
+    Set<Reply> replies;
 
     public enum Role {
         User,
@@ -32,6 +43,21 @@ public class Account {
         Admin
     }
 
+    public Set<Topic> getTopics() {
+        return topics;
+    }
+
+    public void setTopics(Set<Topic> topics) {
+        this.topics = topics;
+    }
+
+    public Set<Reply> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(Set<Reply> replies) {
+        this.replies = replies;
+    }
 
     public String getRole() {
         return role;
@@ -80,6 +106,31 @@ public class Account {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public Map toJsonMap() {
+
+        Map<String, Object> json = new HashMap<>();
+        json.put("avatar", getAvatar());
+        json.put("email", getEmail());
+        json.put("id", getId());
+        json.put("name", getName());
+
+        //permissions
+        Map<String, Object> permissions = new HashMap<>();
+        List<String> root = new ArrayList<>();
+        root.add("own_topics:write");
+        root.add("own_topics:delete");
+        root.add("own_replies:write");
+        root.add("own_replies:delete");
+        root.add("categories:write");
+        root.add("categories:delete");
+        permissions.put("root", root);
+
+        json.put("permissions", permissions);
+
+        return json;
+
     }
 
 }

@@ -6,9 +6,11 @@ USE forum;
 
 CREATE TABLE account(
 	id int primary key auto_increment,
-    email varchar(30) unique not null,
+    email varchar(50) unique not null,
     password varchar(100) not null,
-    name varchar(40) not null
+    name varchar(40) not null,
+    photo longblob,
+    role enum('User','Admin','Moderator')
 );
 
 CREATE TABLE Category(
