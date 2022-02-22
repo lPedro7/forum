@@ -1,13 +1,9 @@
 package com.esliceu.forum.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nimbusds.jose.shaded.json.JSONObject;
-import org.springframework.security.core.Transient;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -28,7 +24,7 @@ public class Account {
     String password;
 
     @Column(name = "photo")
-    String avatar;
+    byte[] avatar;
     @Column(name = "role")
     String role;
 
@@ -103,11 +99,12 @@ public class Account {
     }
 
     public String getAvatar() {
-        return avatar;
+
+        return new String(this.avatar, StandardCharsets.UTF_8);
     }
 
 
-    public void setAvatar(String avatar) {
+    public void setAvatar(byte[] avatar) {
         this.avatar = avatar;
     }
 

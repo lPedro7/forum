@@ -6,12 +6,14 @@ import com.esliceu.forum.models.Account;
 import com.esliceu.forum.repos.AccountRepo;
 import com.esliceu.forum.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -28,7 +30,6 @@ public class AccountServiceImpl implements AccountService {
 
     public UserDetails findByUsername(String email) {
 
-        System.out.println("email = " + email);
 
         try {
             Account account = accountRepo.findByEmail(email);
@@ -43,18 +44,13 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void newAccount(RegisterRequest request) {
-        try {
             Account account = new Account();
             account.setName(request.getName());
             account.setPassword(Config.passwordEncoder().encode(request.getPassword()));
             account.setEmail(request.getEmail());
             account.setRole(request.getRole());
+            account.setAvatar(new byte[]{});
             accountRepo.save(account);
-        }catch (Exception e){
-            e.printStackTrace();
-            throw new RuntimeException();
-        }
-
     }
 
     @Override
@@ -83,6 +79,7 @@ public class AccountServiceImpl implements AccountService {
             throw new RuntimeException();
         }
 
-
     }
+
+
 }

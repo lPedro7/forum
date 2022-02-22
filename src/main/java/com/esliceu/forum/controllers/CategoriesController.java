@@ -3,9 +3,12 @@ package com.esliceu.forum.controllers;
 import com.esliceu.forum.models.Category;
 import com.esliceu.forum.services.CategoryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +55,21 @@ public class CategoriesController {
     public String deleteCategory(@PathVariable String title){
         categoryService.deleteCategoryByTitle(title);
         return "ok";
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String,String>> exceptionHandler(Exception ex){
+        Map<String,String> map = new HashMap();
+
+        if (ex instanceof SQLIntegrityConstraintViolationException){
+            map.put("message","Aquesta categoria ja existeix");
+        }else if(ex instanceof NullPointerException) {
+            map.put("message","Categoria no trobada");
+        }else {
+            map.put("message",ex.getMessage());
+        }
+
+        return ResponseEntity.status(401).body(map);
     }
 
 }

@@ -39,7 +39,6 @@ public class Config extends WebSecurityConfigurerAdapter {
         try {
             auth.userDetailsService(email -> accountService.loadUserByUsername(email));
         }catch (UsernameNotFoundException usernameNotFoundException){
-            System.out.println(usernameNotFoundException.getMessage());
             throw usernameNotFoundException;
         }
     }

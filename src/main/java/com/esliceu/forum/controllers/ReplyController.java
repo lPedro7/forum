@@ -9,6 +9,7 @@ import com.esliceu.forum.services.TopicService;
 import com.esliceu.forum.services.TopicServiceImpl;
 import com.esliceu.forum.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,6 +80,14 @@ public class ReplyController {
         Reply reply = replyService.getById(Integer.parseInt(idreply));
         replyService.deleteReply(reply);
         return "ok";
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String,String>> exceptionHandler(Exception ex){
+        Map<String,String> map = new HashMap();
+        System.out.println(ex);
+        map.put("message",ex.getMessage());
+        return ResponseEntity.badRequest().body(map);
     }
 
 }

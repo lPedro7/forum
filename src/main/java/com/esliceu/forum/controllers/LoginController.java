@@ -5,20 +5,19 @@ import com.esliceu.forum.dto.RegisterRequest;
 import com.esliceu.forum.models.Account;
 import com.esliceu.forum.services.AccountServiceImpl;
 import com.esliceu.forum.utils.JwtTokenUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.nimbusds.jose.shaded.json.JSONObject;
-
+import org.hibernate.HibernateException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -34,7 +33,6 @@ public class LoginController {
     @Autowired
     AccountServiceImpl accountService;
 
-    //Pdte mensaje error
     @PostMapping("/login")
     public Map<String,Object> getLogin(@RequestBody LoginRequest request){
             User user = authenticate(request);
@@ -47,14 +45,12 @@ public class LoginController {
     }
 
     private User authenticate(LoginRequest request) {
-
         Authentication autenticate = authenticationManager
                 .authenticate(
                         new UsernamePasswordAuthenticationToken(
                                 request.getEmail(), request.getPassword()
                         )
                 );
-
         return (User) autenticate.getPrincipal();
     }
 
@@ -78,18 +74,17 @@ public class LoginController {
 
     @PreAuthorize("hasAnyRole('Moderator','Admin')")
     @PutMapping("/profile")
-    public Map<String, Object> updateProfile(@RequestBody String data, @RequestHeader("Authorization") String auth) throws UnsupportedEncodingException {
+    public Map<String, Object> updateProfile(@RequestBody Map<String,Object> data, @RequestHeader("Authorization") String auth) throws UnsupportedEncodingException {
 
         auth = auth.replace("Bearer ", "");
 
         String accountEmail = jwtTokenUtil.getUsername(auth);
 
-        Account newAccount = new Gson().fromJson(data, Account.class);
-
         Account account = accountService.getUserByEmail(accountEmail);
-        account.setName(newAccount.getName());
-        account.setEmail(newAccount.getEmail());
-        String avatar = newAccount.getAvatar();
+        account.setName((String) data.get("name"));
+        account.setEmail((String) data.get("email"));
+        byte[] avatar = ((String) data.get("avatar")).getBytes();
+
         account.setAvatar(avatar);
         accountService.updateAccount(account);
 
@@ -116,4 +111,20 @@ public class LoginController {
 
         return account.toJsonMap();
     }
+
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String,String>> exceptionHandler(Exception exception){
+        Map<String,String> map = new HashMap();
+        if (exception instanceof HibernateException){
+            map.put("message","Aquest usuari ja existeix");
+        }else if (exception instanceof AuthenticationException){
+            map.put("message","Usuari o contrassenya incorrecta");
+        }else {
+            System.out.println(exception);
+            map.put("message",exception.getMessage());
+        }
+        return ResponseEntity.status(401).body(map);
+    }
+
 }

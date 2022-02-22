@@ -14,9 +14,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.Entity;
+import javax.persistence.EntityNotFoundException;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.*;
@@ -125,6 +128,20 @@ public class TopicController {
         topicService.newTopic(topic);
 
         return "Ok";
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String,String>> exceptionHandler(Exception ex){
+        Map<String,String> map = new HashMap();
+        if (ex instanceof NumberFormatException || ex instanceof EntityNotFoundException){
+            map.put("message","Topic no trobat");
+        }else if (ex instanceof NullPointerException){
+            map.put("message","Categoria o topic no trobat");
+        }else {
+            System.out.println(ex);
+            map.put("message",ex.getMessage());
+        }
+        return ResponseEntity.status(400).body(map);
     }
 
 }
