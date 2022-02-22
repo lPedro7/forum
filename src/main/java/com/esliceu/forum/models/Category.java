@@ -1,5 +1,7 @@
 package com.esliceu.forum.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -18,19 +20,10 @@ public class Category {
     @Column(name = "slug")
     String slug;
 
-    @OneToMany
+    @JsonIgnore
+    @OneToMany(mappedBy = "category")
     Set<Topic> topics;
 
-    @OneToMany
-    Set<Reply> replies;
-
-    public Set<Reply> getReplies() {
-        return replies;
-    }
-
-    public void setReplies(Set<Reply> replies) {
-        this.replies = replies;
-    }
 
     public Set<Topic> getTopics() {
         return topics;

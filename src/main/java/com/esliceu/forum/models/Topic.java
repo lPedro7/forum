@@ -1,7 +1,11 @@
 package com.esliceu.forum.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Set;
+
 
 @Entity
 @Table(name = "topic")
@@ -31,6 +35,18 @@ public class Topic {
 
     @ManyToOne
     Category category;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "topic")
+    Set<Reply> replies;
+
+    public Set<Reply> getReplies() {
+        return replies;
+    }
+
+    public void setReplies(Set<Reply> replies) {
+        this.replies = replies;
+    }
 
     public int getCategoryId() {
         return categoryId;

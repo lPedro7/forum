@@ -1,7 +1,9 @@
 package com.esliceu.forum.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
-import java.sql.Date;
+import java.util.Date;
 
 @Entity
 @Table(name = "reply")
@@ -20,7 +22,16 @@ public class Reply {
     Account user;
 
     @ManyToOne
-    Category category;
+    Topic topic;
+
+
+    public Topic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(Topic topic) {
+        this.topic = topic;
+    }
 
     public int getId() {
         return id;
@@ -54,11 +65,4 @@ public class Reply {
         this.user = user;
     }
 
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
 }

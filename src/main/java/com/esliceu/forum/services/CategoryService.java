@@ -10,4 +10,6 @@ public interface CategoryService {
     List<Category> findAll();
 
     Category getByName(String category);
+
+    void deleteCategoryByTitle(String title);
 }

@@ -26,4 +26,10 @@ public class CategoryServiceImpl implements CategoryService{
     public Category getByName(String category) {
         return categoryRepo.findAllByTitle(category);
     }
+
+    @Override
+    public void deleteCategoryByTitle(String title) {
+        Category category = getByName(title);
+        categoryRepo.delete(category);
+    }
 }

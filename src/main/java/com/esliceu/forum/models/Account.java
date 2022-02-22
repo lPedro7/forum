@@ -1,5 +1,6 @@
 package com.esliceu.forum.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nimbusds.jose.shaded.json.JSONObject;
@@ -31,9 +32,11 @@ public class Account {
     @Column(name = "role")
     String role;
 
+    @JsonIgnore
     @OneToMany
     Set<Topic> topics;
 
+    @JsonIgnore
     @OneToMany
     Set<Reply> replies;
 
@@ -108,7 +111,7 @@ public class Account {
         this.avatar = avatar;
     }
 
-    public Map toJsonMap() {
+    public Map<String,Object> toJsonMap() {
 
         Map<String, Object> json = new HashMap<>();
         json.put("avatar", getAvatar());

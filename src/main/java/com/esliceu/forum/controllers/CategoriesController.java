@@ -1,18 +1,11 @@
 package com.esliceu.forum.controllers;
 
 import com.esliceu.forum.models.Category;
-import com.esliceu.forum.services.CategoryService;
 import com.esliceu.forum.services.CategoryServiceImpl;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,25 +17,41 @@ public class CategoriesController {
 
     @GetMapping("/categories")
     public List<Category> getCategories() {
-
-        List<Category> categories = categoryService.findAll();
-
-        return categories;
+        return categoryService.findAll();
     }
 
+    @PreAuthorize("hasAnyRole('User','Moderator','Admin')")
     @PostMapping("/categories")
-    public String newCategoria(@RequestBody String data) throws JsonProcessingException {
-
-        Category c = new Gson().fromJson(data, Category.class);
-
-        if (c.getTitle().contains("/")){
-            c.setTitle(c.getTitle().replace("/",""));
-            c.setSlug(c.getTitle());
+    public Map<String,Object> newCategoria(@RequestBody Map<String,Object> data){
+        String title = (String) data.get("title");
+        if (title.contains("/")){
+            data.put("title",title.replace("/",""));
         }
-        c.setSlug(c.getTitle());
+        data.put("slug",title);
+        Category c = new Category();
+        c.setSlug((String) data.get("title"));
+        c.setTitle((String) data.get("title"));
+        c.setDescription((String) data.get("description"));
         categoryService.newCategory(c);
-        return new Gson().toJson(c);
+        return data;
+    }
 
+    @PreAuthorize("hasAnyRole('User','Moderator','Admin')")
+    @PutMapping("/categories/{title}")
+    public Map<String,Object> updateCategory(@PathVariable String title,@RequestBody Map<String,Object> params){
+        Category category = categoryService.getByName(title);
+        category.setTitle((String) params.get("title"));
+        category.setSlug((String) params.get("title"));
+        category.setDescription((String) params.get("description"));
+        categoryService.newCategory(category);
+        return params;
+    }
+
+    @PreAuthorize("hasAnyRole('Moderator','Admin')")
+    @DeleteMapping("/categories/{title}")
+    public String deleteCategory(@PathVariable String title){
+        categoryService.deleteCategoryByTitle(title);
+        return "ok";
     }
 
 }
