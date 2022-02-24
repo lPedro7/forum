@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  db:
+    image: lpedro7/mysqlforum
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: forum
+    restart: always
+    ports:
+    - "3306:3306"
+  web:
+    image: lpedro7/frontforum
+    environment:
+      MYSQL_DATABASE: forum
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_HOST: localhost
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    restart: on-failure

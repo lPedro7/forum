@@ -34,14 +34,14 @@ public class LoginController {
     AccountServiceImpl accountService;
 
     @PostMapping("/login")
-    public Map<String,Object> getLogin(@RequestBody LoginRequest request){
-            User user = authenticate(request);
-            String token = jwtTokenUtil.generateAccessToken(user);
-            Account account = accountService.getUserByEmail(request.getEmail());
-            Map<String,Object> map = new HashMap<>();
-            map.put("user",account.toJsonMap());
-            map.put("token",token);
-            return map;
+    public Map<String, Object> getLogin(@RequestBody LoginRequest request) {
+        User user = authenticate(request);
+        String token = jwtTokenUtil.generateAccessToken(user);
+        Account account = accountService.getUserByEmail(request.getEmail());
+        Map<String, Object> map = new HashMap<>();
+        map.put("user", account.toJsonMap());
+        map.put("token", token);
+        return map;
     }
 
     private User authenticate(LoginRequest request) {
@@ -62,7 +62,7 @@ public class LoginController {
 
     @PreAuthorize("hasAnyRole('Moderator','Admin')")
     @GetMapping("/getprofile")
-    public Map<String,Object> getProfile(@RequestHeader("Authorization") String auth){
+    public Map<String, Object> getProfile(@RequestHeader("Authorization") String auth) {
 
         auth = auth.replace("Bearer ", "");
 
@@ -74,7 +74,7 @@ public class LoginController {
 
     @PreAuthorize("hasAnyRole('Moderator','Admin')")
     @PutMapping("/profile")
-    public Map<String, Object> updateProfile(@RequestBody Map<String,Object> data, @RequestHeader("Authorization") String auth) throws UnsupportedEncodingException {
+    public Map<String, Object> updateProfile(@RequestBody Map<String, Object> data, @RequestHeader("Authorization") String auth) throws UnsupportedEncodingException {
 
         auth = auth.replace("Bearer ", "");
 
@@ -88,16 +88,16 @@ public class LoginController {
         account.setAvatar(avatar);
         accountService.updateAccount(account);
 
-        Map<String,Object> response = new HashMap<>();
-        response.put("user",account.toJsonMap());
-        response.put("token",auth);
+        Map<String, Object> response = new HashMap<>();
+        response.put("user", account.toJsonMap());
+        response.put("token", auth);
 
         return response;
     }
 
     @PreAuthorize("hasAnyRole('Moderator','Admin')")
     @PutMapping("/profile/password")
-    public Map<String, Object> updatePassword(@RequestBody Map<String,Object> mapData, @RequestHeader("Authorization") String auth){
+    public Map<String, Object> updatePassword(@RequestBody Map<String, Object> mapData, @RequestHeader("Authorization") String auth) {
 
         String token = auth.replace("Bearer ", "");
         String userEmail = jwtTokenUtil.getUsername(token);
@@ -114,16 +114,19 @@ public class LoginController {
 
 
     @ExceptionHandler
-    public ResponseEntity<Map<String,String>> exceptionHandler(Exception exception){
-        Map<String,String> map = new HashMap();
-        if (exception instanceof HibernateException){
-            map.put("message","Aquest usuari ja existeix");
-        }else if (exception instanceof AuthenticationException){
-            map.put("message","Usuari o contrassenya incorrecta");
+    public ResponseEntity<Map<String, String>> exceptionHandler(Exception exception) {
+        Map<String, String> map = new HashMap();
+        if (exception instanceof HibernateException) {
+            map.put("message", "Aquest usuari ja existeix");
+        } else if (exception instanceof AuthenticationException) {
+            map.put("message", "Usuari o contrassenya incorrecta");
+        } else if (exception instanceof DataIntegrityViolationException) {
+            map.put("message", "Aquest usuari ja existeix");
         }else {
             System.out.println(exception);
-            map.put("message",exception.getMessage());
+            map.put("message", exception.getMessage());
         }
+
         return ResponseEntity.status(401).body(map);
     }
 
