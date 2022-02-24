@@ -13,33 +13,36 @@ CREATE TABLE account(
     role enum('User','Admin','Moderator')
 );
 
-CREATE TABLE Category(
+CREATE TABLE category(
 	id int primary key auto_increment,
     name varchar(15) not null unique,
+    slug varchar(15) not null,
     description varchar(40)
-);
+    );
 
-CREATE TABLE Topic(
+CREATE TABLE topic(
 	id int primary key auto_increment,
-    name varchar(20) not null,
-    created_date TIMESTAMP default current_timestamp,
-    account_id int,
-    FOREIGN KEY (account_id) REFERENCES account(id)
+    title varchar(20) not null,
+	content text,
+    views int default 0,
+    createdAt TIMESTAMP default current_timestamp,
+    user_id int,
+    FOREIGN KEY (user_id) REFERENCES account(id)
     ON DELETE CASCADE,
     category_id int,
-    FOREIGN KEY (category_id) REFERENCES Category(id)
+    FOREIGN KEY (category_id) REFERENCES category(id)
     ON DELETE CASCADE
 );
 
-CREATE TABLE Reply(
+CREATE TABLE reply(
 	id int primary key auto_increment,
-    message varchar(50) not null,
+    content varchar(50) not null,
 	created_date TIMESTAMP default current_timestamp,
-	account_id int,
-    FOREIGN KEY (account_id) REFERENCES account(id)
+	user_id int,
+    FOREIGN KEY (user_id) REFERENCES account(id)
     ON DELETE CASCADE,
     topic_id int,
-    FOREIGN KEY (topic_id) REFERENCES Topic(id)
+    FOREIGN KEY (topic_id) REFERENCES topic(id)
     ON DELETE CASCADE
 );
 

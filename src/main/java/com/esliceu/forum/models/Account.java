@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
-@Table(name = "Account")
+@Table(name = "account")
 @Entity
 public class Account {
 
