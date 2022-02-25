@@ -115,16 +115,23 @@ public class Account {
         json.put("email", getEmail());
         json.put("id", getId());
         json.put("name", getName());
-
+        json.put("role", getRole());
         //permissions
         Map<String, Object> permissions = new HashMap<>();
         List<String> root = new ArrayList<>();
-        root.add("own_topics:write");
-        root.add("own_topics:delete");
-        root.add("own_replies:write");
-        root.add("own_replies:delete");
-        root.add("categories:write");
-        root.add("categories:delete");
+        if(this.role.equals("User")){
+            root.add("own_topics:write");
+            root.add("own_topics:delete");
+            root.add("own_replies:write");
+            root.add("own_replies:delete");
+        }else{
+            root.add("own_topics:write");
+            root.add("own_topics:delete");
+            root.add("own_replies:write");
+            root.add("own_replies:delete");
+            root.add("categories:write");
+            root.add("categories:delete");
+        }
         permissions.put("root", root);
 
         json.put("permissions", permissions);
