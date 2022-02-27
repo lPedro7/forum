@@ -3,6 +3,7 @@ package com.esliceu.forum.configuration;
 import com.esliceu.forum.interceptors.JwtTokenFilter;
 import com.esliceu.forum.services.AccountServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,10 +20,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
 import javax.servlet.http.HttpServletResponse;
-import java.security.MessageDigest;
-import java.security.SecureRandom;
 
 @Configuration
 @EnableWebSecurity
@@ -34,14 +32,12 @@ public class Config extends WebSecurityConfigurerAdapter {
     @Autowired
     JwtTokenFilter jwtTokenFilter;
 
+    @Value("${clienturl}")
+    String clienturl;
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        try {
-            auth.userDetailsService(email -> accountService.loadUserByUsername(email));
-        }catch (UsernameNotFoundException usernameNotFoundException){
-            throw usernameNotFoundException;
-        }
-    }
+        auth.userDetailsService(email -> accountService.loadUserByUsername(email)); }
 
     @Bean
     public static PasswordEncoder passwordEncoder(){return new BCryptPasswordEncoder();
@@ -89,7 +85,7 @@ public class Config extends WebSecurityConfigurerAdapter {
                 new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOrigin(clienturl);
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);

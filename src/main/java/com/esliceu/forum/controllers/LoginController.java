@@ -16,9 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @RestController
@@ -74,7 +71,7 @@ public class LoginController {
 
     @PreAuthorize("hasAnyRole('Moderator','Admin')")
     @PutMapping("/profile")
-    public Map<String, Object> updateProfile(@RequestBody Map<String, Object> data, @RequestHeader("Authorization") String auth) throws UnsupportedEncodingException {
+    public Map<String, Object> updateProfile(@RequestBody Map<String, Object> data, @RequestHeader("Authorization") String auth){
 
         auth = auth.replace("Bearer ", "");
 

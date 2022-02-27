@@ -1,11 +1,9 @@
 package com.esliceu.forum.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
-
 
 @Entity
 @Table(name = "topic")

@@ -8,7 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TopicRepo extends JpaRepository<Topic,Integer> {
-
     List<Topic> findAllByCategoryId(int category);
-
 }

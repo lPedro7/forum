@@ -1,7 +1,5 @@
 package com.esliceu.forum.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.persistence.*;
 import java.util.Date;
 
@@ -23,7 +21,6 @@ public class Reply {
 
     @ManyToOne
     Topic topic;
-
 
     public Topic getTopic() {
         return topic;

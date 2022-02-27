@@ -25,7 +25,6 @@ public class Category {
     @OneToMany(mappedBy = "category")
     Set<Topic> topics;
 
-
     public Set<Topic> getTopics() {
         return topics;
     }

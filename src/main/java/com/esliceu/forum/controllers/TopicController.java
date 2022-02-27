@@ -71,13 +71,10 @@ public class TopicController {
         topic.setTitle((String) topicMap.get("title"));
         topic.setContent((String) topicMap.get("content"));
         Category category = categoryService.getByName((String) topicMap.get("category"));
-
         topic.setCategory(category);
         topic.setCreatedAt(Date.from(Instant.now()));
         topic.setUser(account);
-
         topicService.newTopic(topic);
-
 
         Map<String,Object> topicResponse = new ObjectMapper().convertValue(topic,Map.class);
 

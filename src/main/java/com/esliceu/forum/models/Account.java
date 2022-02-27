@@ -11,11 +11,9 @@ import java.util.*;
 @Entity
 public class Account {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
-
     @Column(name = "email")
     String email;
     @Column(name = "name")
@@ -35,12 +33,6 @@ public class Account {
     @JsonIgnore
     @OneToMany
     Set<Reply> replies;
-
-    public enum Role {
-        User,
-        Moderator,
-        Admin
-    }
 
     public Set<Topic> getTopics() {
         return topics;
@@ -99,7 +91,6 @@ public class Account {
     }
 
     public String getAvatar() {
-
         return new String(this.avatar, StandardCharsets.UTF_8);
     }
 
@@ -116,7 +107,6 @@ public class Account {
         json.put("id", getId());
         json.put("name", getName());
         json.put("role", getRole());
-        //permissions
         Map<String, Object> permissions = new HashMap<>();
         List<String> root = new ArrayList<>();
         if(this.role.equals("User")){
@@ -133,9 +123,7 @@ public class Account {
             root.add("categories:delete");
         }
         permissions.put("root", root);
-
         json.put("permissions", permissions);
-
         return json;
 
     }

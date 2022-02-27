@@ -5,14 +5,12 @@ import com.esliceu.forum.models.Reply;
 import com.esliceu.forum.models.Topic;
 import com.esliceu.forum.services.AccountServiceImpl;
 import com.esliceu.forum.services.ReplyServiceImpl;
-import com.esliceu.forum.services.TopicService;
 import com.esliceu.forum.services.TopicServiceImpl;
 import com.esliceu.forum.utils.JwtTokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import java.sql.Date;
 import java.time.Instant;
 import java.util.HashMap;

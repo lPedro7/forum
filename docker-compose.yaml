@@ -28,6 +28,7 @@ services:
     volumes:
     - ./target:/app
     command: java -jar forum-0.0.1-SNAPSHOT.jar
+    restart: always
     environment:
       - server.port=8080
       - token.expiration.time=1000000
@@ -37,3 +38,9 @@ services:
       - spring.datasource.password=root
       - images.url=http://localhost:8080
       - origins=http://localhost:3000
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3306" ]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
